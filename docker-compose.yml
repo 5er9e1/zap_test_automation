@@ -44,8 +44,8 @@ services:
     expose:
       - "4444"
     # to set public
-    ports:
-      - "4444:4444"
+    # ports:
+    #   - "4444:4444"
     links:
       - zap
     shm_size: '2gb'
@@ -65,8 +65,8 @@ services:
     environment:
       - ZAP_PORT=8090
     # to set public
-    ports:
-      - "8090:8090"
+    # ports:
+    #   - "8090:8090"
     volumes:
       - report:/home/zap/report
     networks:
