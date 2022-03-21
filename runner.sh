@@ -9,7 +9,7 @@ for side_script in $(/bin/ls *.side); do
     val="$(echo "$v" | sed 's/=/ /1' | awk '{print$2}')"
     sed -i "s/\${${key}}/${val}/g" /tmp/active.side
   done
-  $(which selenium-side-runner) --timeout 30000 --server "${CHROME_API_URL}" -c "browserName=chrome acceptInsecureCerts=true" /tmp/active.side || ERRORS="${ERRORS} ${side_script}"
+  $(which selenium-side-runner) --timeout 30000 --server "${CHROME_API_URL}" --proxy-options="http=${PROXY_SERVER};https=${PROXY_SERVER}" -c "browserName=chrome acceptInsecureCerts=true" /tmp/active.side || ERRORS="${ERRORS} ${side_script}"
   rm -f /tmp/active.side
 done
 

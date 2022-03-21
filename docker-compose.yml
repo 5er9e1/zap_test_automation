@@ -14,6 +14,7 @@ services:
       - REPORT_PATTERN={{yyyyMMdd_hhmm}}_service_report
       - REPORT_DIR=/home/zap/report
       - ZAP_API_URL=http://zap:8090
+      - PROXY_SERVER=zap:8090
       - CHROME_API_URL=http://chrome:4444/wd/hub
       - REPORT_GIT_REPO=git@github.com:org_name/repo_name.git
       # use [cat ~/.ssh/id_rsa | base64 -w 0] to generate base64 value
@@ -34,9 +35,6 @@ services:
   chrome:
     container_name: chrome
     image: selenium/standalone-chrome:4.1.2-20220217
-    environment:
-      - http_proxy=http://zap:8090
-      - https_proxy=https://zap:8090
     healthcheck:
       test: curl --fail http://chrome:4444 || exit 1
       interval: 30s
@@ -46,8 +44,8 @@ services:
     expose:
       - "4444"
     # to set public
-    # ports:
-    #   - "4444:4444"
+    ports:
+      - "4444:4444"
     links:
       - zap
     shm_size: '2gb'
@@ -67,8 +65,8 @@ services:
     environment:
       - ZAP_PORT=8090
     # to set public
-    # ports:
-    #   - "8090:8090"
+    ports:
+      - "8090:8090"
     volumes:
       - report:/home/zap/report
     networks:
