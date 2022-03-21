@@ -28,6 +28,8 @@ services:
         condition: service_healthy
       chrome:
         condition: service_healthy
+    networks:
+      - zap_network
 
   chrome:
     container_name: chrome
@@ -51,6 +53,8 @@ services:
     shm_size: '2gb'
     depends_on:
       - zap
+    networks:
+      - zap_network
 
   zap:
     container_name: zap
@@ -67,11 +71,11 @@ services:
     #   - "8090:8090"
     volumes:
       - report:/home/zap/report
+    networks:
+      - zap_network
 
 networks:
   zap_network:
-    # driver: host
-    # to set public
     driver: bridge
 
 volumes:
