@@ -12,11 +12,11 @@ jobs:
 
       - name : prepare environment
         run: mkdir -p report && sed -i "s|CURRENT_DIR|$(pwd)|g" docker-compose.yml
-        working-directory: ./security_check
+        working-directory: .
 
       - name: start security check
         run: docker-compose up -d
-        working-directory: ./security_check
+        working-directory: .
         env:
           PARAMETERS: ${{ secrets.PARAMETERS }}
           TITLE: ${{ secrets.TITLE }}
@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: report.html
-          path: ./security_check/report/report.html
+          path: ./report/report.html
           retention-days: 31
