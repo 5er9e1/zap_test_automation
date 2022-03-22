@@ -6,21 +6,18 @@ services:
     build: .
     image: siderunner:v1
     environment:
-      - PARAMETERS=username=exmaple_user password=example_password
-      - TITLE=THE SERVICE report
+      - PARAMETERS
+      - TITLE
       # - TEMPLATE="traditional-html"
-      - DESCRIPTION=Cool security report
-      - SITES=https://domain.com|https://sub1.domain.com|https://sub2.domain.com
-      - REPORT_PATTERN={{yyyyMMdd_hhmm}}_service_report
+      - DESCRIPTION
+      - SITES
+      - REPORT_PATTERN=report
       - REPORT_DIR=/home/zap/report
       - ZAP_API_URL=http://zap:8090
       - PROXY_SERVER=zap:8090
       - CHROME_API_URL=http://chrome:4444/wd/hub
-      - REPORT_GIT_REPO=git@github.com:org_name/repo_name.git
-      # use [cat ~/.ssh/id_rsa | base64 -w 0] to generate base64 value
-      - DEPLOY_KEY_BASE64=BLAHBLAHSOMEVALUEO0=
     volumes:
-      - report:/report
+      - CURRENT_DIR/report:/report
     links:
       - chrome
       - zap
@@ -43,9 +40,6 @@ services:
       timeout: 5s
     expose:
       - "4444"
-    # to set public
-    # ports:
-    #   - "4444:4444"
     links:
       - zap
     shm_size: '2gb'
@@ -56,7 +50,6 @@ services:
 
   zap:
     container_name: zap
-    # to be able write in volume
     user: "0:0"
     image: owasp/zap2docker-stable
     command: ["zap.sh", "-daemon", "-port", "8090", "-host", "0.0.0.0", "-config", "api.addrs.addr.name=.*", "-config", "api.addrs.addr.regex=true", "-config", "api.disablekey=true", "-config", "proxy.behindnat=true"]
@@ -64,17 +57,11 @@ services:
       - "8090"
     environment:
       - ZAP_PORT=8090
-    # to set public
-    # ports:
-    #   - "8090:8090"
     volumes:
-      - report:/home/zap/report
+      - CURRENT_DIR/report:/home/zap/report
     networks:
       - zap_network
 
 networks:
   zap_network:
     driver: bridge
-
-volumes:
-  report: 

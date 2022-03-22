@@ -1,0 +1,37 @@
+name: ZAP security check
+
+on: workflow_call
+
+jobs:
+  security_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name : prepare environment
+        run: mkdir -p report && sed -i "s|CURRENT_DIR|$(pwd)|g" docker-compose.yml
+        working-directory: ./security_check
+
+      - name: start security check
+        run: docker-compose up -d
+        working-directory: ./security_check
+        env:
+          PARAMETERS: ${{ secrets.PARAMETERS }}
+          TITLE: ${{ secrets.TITLE }}
+          DESCRIPTION: ${{ secrets.DESCRIPTION }}
+          SITES: ${{ secrets.SITES }}
+
+      - name: wait while check complete
+        run: while [ $(docker ps | grep siderunner | wc -l) -gt 0 ]; do sleep 5; done
+
+      - name: print siderunner logs
+        run: docker logs siderunner
+
+      - name: upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: report.html
+          path: ./security_check/report/report.html
+          retention-days: 31

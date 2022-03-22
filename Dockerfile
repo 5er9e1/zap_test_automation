@@ -1,6 +1,6 @@
 FROM node:alpine as base
 
-RUN npm install -g selenium-side-runner urlencode-cli && apk update && apk upgrade && apk add --no-cache git openssh && echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config
+RUN npm install -g selenium-side-runner urlencode-cli
 
 FROM base
 WORKDIR /app

@@ -33,57 +33,16 @@ REPORT_FILE=$(/usr/bin/basename "${REPORT_FILE_PATH}")
 sleep 5
 
 if [ -z "${REPORT_FILE}" ]; then
-  echo "Error: empty report filename"
+  echo "ERROR: No report with providen filename: ${REPORT_FILE}" >&2
   exit 1
-fi
-
-mkdir -p ~/.ssh/
-chmod 700 ~/.ssh/
-echo -e "$(echo \"${DEPLOY_KEY_BASE64}\" | base64 -d)" > ~/.ssh/id_rsa
-chmod 600 ~/.ssh/id_rsa
-
-LOCAL_REPO='/tmp/repo'
-BRANCH='security_reports'
-NEW_BRANCH=0
-
-git config --global user.email "report@creator.local"
-git config --global user.name "Report Creator"
-
-git clone ${REPORT_GIT_REPO} --branch ${BRANCH} "${LOCAL_REPO}" 2>/dev/null
-
-if [ ! -d "${LOCAL_REPO}" ]; then
-  NEW_BRANCH=1
-  mkdir -p "${LOCAL_REPO}"
-  cd "${LOCAL_REPO}"
-  git config --global init.defaultBranch ${BRANCH}
-  git init
-  git remote add origin ${REPORT_GIT_REPO}
 else
-  cd "${LOCAL_REPO}"
+  echo "SUCCESS: report completed: ${REPORT_FILE}"
 fi
-
-if [ "${ERRORS}x" == "x" ]; then
-  cp -p "/report/${REPORT_FILE}" .
-  git add "${REPORT_FILE}"
-else
-  cp -p "/report/${REPORT_FILE}" "ended_with_errors_${REPORT_FILE}"
-  git add "ended_with_errors_${REPORT_FILE}"
-fi
-
-
-git commit -m "[$(date +'%Y%m%d%H%M')] add security report: ${TITLE}"
-if [ ${NEW_BRANCH} == "1" ]; then
-  git push --set-upstream origin ${BRANCH}
-else
-  git push -u origin
-fi
-
-echo -e "" > ~/.ssh/id_rsa
 
 if [ "${ERRORS}x" != "x" ]; then
-  echo 'Ended with errors on'
+  echo 'Ended with errors on' >&2
   for ERR in ${ERRORS}; do
-    echo "  - ${ERR}"
+    echo "  - ${ERR}" >&2
   done
   exit 1
 fi
